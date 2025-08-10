@@ -43,12 +43,12 @@ export const ReplyDialog: React.FC<ReplyDialogProps> = ({
       <DialogContent className="sm:max-w-[425px] bg-white">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Phản hồi cho yêu cầu #{supportId}</DialogTitle>
+            <DialogTitle>Reply to request #{supportId}</DialogTitle>
           </DialogHeader>
           <div className="py-4">
             <Textarea
               id="response"
-              placeholder="Nhập nội dung phản hồi của bạn tại đây..."
+              placeholder="Enter your response here..."
               rows={6}
               value={responseText}
               onChange={(e) => setResponseText(e.target.value)}
@@ -59,15 +59,15 @@ export const ReplyDialog: React.FC<ReplyDialogProps> = ({
             {/* DialogClose sẽ tự động xử lý việc đóng Dialog */}
             <DialogClose asChild>
               <Button type="button" variant="outline" disabled={isReplying}>
-                Hủy
+                Cancel
               </Button>
             </DialogClose>
             <Button
               type="submit"
-              className="bg-[#E50000] hover:opacity-80"
+              className="bg-[#E50000] text-white hover:opacity-80"
               disabled={isReplying || !responseText.trim()}
             >
-              {isReplying ? "Đang gửi..." : "Gửi phản hồi"}
+              {isReplying ? "Sending..." : "Send response"}
             </Button>
           </DialogFooter>
         </form>

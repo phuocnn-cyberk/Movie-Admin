@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { useState } from "react";
 
-const AddAdminDialog: React.FC<{ close?: () => void }> = ({ close }) => {
+const AddMovieDialog: React.FC<{ close?: () => void }> = ({ close }) => {
   const [role, setRole] = useState<string | undefined>(undefined);
   const [hub, setHub] = useState<string | undefined>(undefined);
   const [wallet, setWallet] = useState<string | undefined>(undefined);
@@ -105,11 +105,11 @@ const AddAdminDialog: React.FC<{ close?: () => void }> = ({ close }) => {
           Cancel
         </Button>
         <Button className="bg-highlight text-white md:w-[100px]">
-          Add Admin
+          Add Movie
         </Button>
       </DialogFooter>
     </DialogContent>
   );
 };
 
-export default AddAdminDialog;
+export default AddMovieDialog;

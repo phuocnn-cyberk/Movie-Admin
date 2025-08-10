@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Outlet, useLocation } from "react-router";
 import { MobileHeader } from "~/components/common/mobile-header";
 import { NavigationSidebar } from "~/components/common/navigation-sidebar";
+import { SignInButton } from "~/components/sign-in-button";
 import { requiredAuth } from "~/middlewares/authentication";
 import { ROUTES } from "~/routes";
 
@@ -13,8 +14,8 @@ export const Header = () => {
         return "Dashboard";
       case ROUTES.SUPPORT_MANAGEMENT:
         return "Support Management";
-      case ROUTES.QUEST_MANAGEMENT:
-        return "Quest Management";
+      case ROUTES.MOVIE_MANAGEMENT:
+        return "Movie Management";
       default:
         return "";
     }
@@ -24,6 +25,9 @@ export const Header = () => {
       <h1 className="text-base font-semibold text-[#193049] md:text-lg">
         {getTitle()}
       </h1>
+      <div className="hidden items-center gap-2 md:flex">
+        <SignInButton />
+      </div>
     </div>
   );
 };
@@ -35,7 +39,7 @@ export async function clientLoader() {
 export default function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[#111111]">
+    <div className="flex h-screen w-full overflow-hidden bg-black">
       <NavigationSidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}

@@ -22,7 +22,7 @@ interface NavigationItemType {
 const navigationItems: NavigationItemType[] = [
   { name: "Dashboard", path: ROUTES.DASHBOARD },
   { name: "Support Management", path: ROUTES.SUPPORT_MANAGEMENT },
-  { name: "Admin Management", path: ROUTES.ADMIN_MANAGEMENT },
+  { name: "Movie Management", path: ROUTES.MOVIE_MANAGEMENT },
 ];
 
 interface NavigationItemProps {
@@ -86,7 +86,7 @@ export const NavigationSidebar = ({
     <>
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+          className="fixed inset-0 z-40 md:hidden"
           onClick={onClose}
           aria-hidden="true"
         />
@@ -94,7 +94,7 @@ export const NavigationSidebar = ({
 
       <nav
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex h-full w-[248px] flex-col justify-between bg-[#111111] px-6 pb-10 text-white transition-transform duration-300",
+          "fixed inset-y-0 left-0 z-50 flex h-full w-[248px] flex-col justify-between px-6 pb-10 text-white transition-transform duration-300",
           "md:relative md:translate-x-0", // Always show on desktop
           isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0" // Only hide on mobile when closed
         )}
