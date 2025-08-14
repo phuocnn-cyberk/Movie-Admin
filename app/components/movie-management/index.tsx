@@ -1,47 +1,80 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import { useState } from "react";
-import AddMovieDialog from "./add-movie-dialog";
-import { MovieListTable } from "./movie-list-table";
 import { Plus } from "lucide-react";
+import AddMovieDialog from "./add-movie-dialog";
+import MovieListTable from "./movie-list-table";
+import { getAllMovies } from "app/services/api";
 
-const MovieMockData = [
-  {
-    id: 1,
-    image:
-      "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQUaC5rYx10mwq3gKEGDHZBdnVCO5rh1Z979Dm_mTL9-FJDx4k1aGX7esyP350m85mkFQfvzHeKPtOu9u4_hgpXc_KzKxxbMabBBMhQlvqy9w",
-    title: "The Last of Us",
-    year: "2023",
-    genre: "Action",
-  },
-];
+export type Movie = {
+  movieID: number;
+  title: string;
+  description: string;
+  year: string;
+  poster: string;
+  genres: string[]; // ✅ Thêm field này
+  accessLevel: "FREE" | "PREMIUM";
+};
 
-const MovieManagement = () => {
+export default function MovieManagement() {
+  const [movies, setMovies] = useState<Movie[]>([]);
   const [openAddMovieDialog, setOpenAddMovieDialog] = useState(false);
 
+  const loadMovies = async () => {
+    try {
+      const res = await getAllMovies();
+      let moviesArray: any[] = [];
+
+      if (Array.isArray(res)) {
+        moviesArray = res;
+      } else if (res?.data && Array.isArray(res.data)) {
+        moviesArray = res.data;
+      }
+
+      const formattedMovies: Movie[] = moviesArray.map((m) => ({
+        movieID: m.movieID ?? m.MovieID ?? 0,
+        title: m.title ?? m.Title ?? "",
+        description: m.description ?? m.Description ?? "",
+        year: m.year?.toString() ?? m.Year?.toString() ?? "",
+        poster: m.poster ?? m.Poster ?? "",
+        genres: m.genres ?? m.Genres ?? [], // ✅ Đảm bảo có genres
+        accessLevel: m.accessLevel ?? m.AccessLevel ?? "FREE",
+      }));
+
+      setMovies(formattedMovies);
+    } catch (err) {
+      console.error("Failed to fetch movies:", err);
+      setMovies([]);
+    }
+  };
+
+  useEffect(() => {
+    loadMovies();
+  }, []);
+
   return (
-    <div className="">
-      <div className="flex items-center justify-between">
+    <div>
+      <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">
-          Movie List ({MovieMockData.length})
+          Movie List ({movies.length})
         </h2>
         <Dialog open={openAddMovieDialog} onOpenChange={setOpenAddMovieDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-[#E50000] text-white rounded-lg px-4 py-2 text-sm font-semibold">
-              <Plus className="h-4 w-4" />
-              Add Movie
+            <Button className="bg-red-600 text-white">
+              <Plus className="h-4 w-4" /> Add Movie
             </Button>
           </DialogTrigger>
-          <AddMovieDialog close={() => setOpenAddMovieDialog(false)} />
+          <AddMovieDialog
+            close={() => {
+              setOpenAddMovieDialog(false);
+              loadMovies();
+            }}
+          />
         </Dialog>
       </div>
-      <MovieListTable>
-        <div className="overflow-x-auto">
-          <MovieListTable.DataTable data={MovieMockData} />
-        </div>
-      </MovieListTable>
+      <MovieListTable data={movies} />
     </div>
   );
-};
-
-export default MovieManagement;
+}

@@ -1,115 +1,148 @@
-import { Button } from "@/components/ui/button";
-import {
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { FloatingLabelInput } from "@/components/ui/floating-label-input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useState } from "react";
+"use client";
 
-const AddMovieDialog: React.FC<{ close?: () => void }> = ({ close }) => {
-  const [role, setRole] = useState<string | undefined>(undefined);
-  const [hub, setHub] = useState<string | undefined>(undefined);
-  const [wallet, setWallet] = useState<string | undefined>(undefined);
+import { useState, useEffect } from "react";
+import { DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import Select from "react-select";
+import { createMovie, getAllGenres } from "app/services/api"; // Thay tên API nếu khác
+
+type GenreOption = {
+  value: number;
+  label: string;
+};
+
+type Props = {
+  close?: () => void;
+};
+
+export default function AddMovieDialog({ close }: Props) {
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    duration: "",
+    year: "",
+    poster: "",
+    trailerURL: "",
+    videoURL: "",
+    accessLevel: "FREE",
+  });
+
+  const [genres, setGenres] = useState<GenreOption[]>([]);
+  const [selectedGenres, setSelectedGenres] = useState<GenreOption[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  // Load genres from BE
+  useEffect(() => {
+    const fetchGenres = async () => {
+      try {
+        const res = await getAllGenres();
+        const arr = Array.isArray(res?.data) ? res.data : res;
+        setGenres(
+          arr.map((g: any) => ({
+            value: g.genreID,
+            label: g.name,
+          }))
+        );
+      } catch (err) {
+        console.error("Failed to load genres:", err);
+      }
+    };
+    fetchGenres();
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.title.trim()) {
+      alert("Please enter title");
+      return;
+    }
+    if (selectedGenres.length === 0) {
+      alert("Please select at least one genre");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const payload = {
+        ...formData,
+        duration: parseInt(formData.duration),
+        year: parseInt(formData.year),
+        genres: selectedGenres.map((g) => g.value), // gửi mảng ID
+      };
+
+      await createMovie(payload);
+      alert("Movie added successfully!");
+      close?.();
+    } catch (err) {
+      console.error("Failed to add movie:", err);
+      alert("Error adding movie");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <DialogContent className="rounded-xl bg-white [&>button]:hidden">
+    <DialogContent className="max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 rounded-lg shadow-lg">
       <DialogHeader>
-        <DialogTitle className="text-base font-semibold">Add Admin</DialogTitle>
-        <DialogDescription className="font-base text-sm">
-          Only verified wallet addresses can sign in to the system. Please
-          double-check the information before adding a new admin.
-        </DialogDescription>
+        <DialogTitle>Add New Movie</DialogTitle>
+        <p className="text-sm text-gray-500">
+          Fill all movie info and assign genres (multiple).
+        </p>
       </DialogHeader>
 
-      <div className="grid grid-cols-2 gap-1">
-        <FloatingLabelInput
-          id="wallet"
-          label="Wallet Address"
-          className="col-span-2 !h-[72px] w-full"
-          inputClassName="text-sm text-[#193049] font-semibold"
-          value={wallet}
-          onChange={(e) => setWallet(e.target.value)}
-        />
-        <Select value={role} onValueChange={setRole}>
-          <SelectTrigger className="!h-auto w-full p-4 text-sm [&_.select-badge]:hidden">
-            <SelectValue placeholder="Role" className="!text-sm" />
-          </SelectTrigger>
+      <div className="space-y-3">
+        <Input name="title" placeholder="Title" value={formData.title} onChange={handleChange} />
+        <Input name="description" placeholder="Description" value={formData.description} onChange={handleChange} />
+        <Input name="duration" placeholder="Duration (minutes)" value={formData.duration} onChange={handleChange} />
+        <Input name="year" placeholder="Year" value={formData.year} onChange={handleChange} />
+        <Input name="poster" placeholder="Poster URL" value={formData.poster} onChange={handleChange} />
+        <Input name="trailerURL" placeholder="Trailer URL" value={formData.trailerURL} onChange={handleChange} />
+        <Input name="videoURL" placeholder="Video URL" value={formData.videoURL} onChange={handleChange} />
 
-          <SelectContent className="[&_[data-radix-select-item-indicator]]:hidden [&_[data-state=checked]]:bg-transparent [&_[data-state=checked]_svg]:hidden">
-            <SelectGroup>
-              {[
-                { label: "Admin", value: "admin" },
-                { label: "Main-Admin", value: "main-admin" },
-              ].map((item) => (
-                <SelectItem
-                  key={item.value}
-                  value={item.value}
-                  className="flex items-center justify-between px-4 py-2 hover:bg-gray-50"
-                >
-                  <span>{item.label}</span>
-                  {role === item.value && (
-                    <span className="select-badge ml-auto inline-block rounded bg-[#CEEEEE] px-1 text-[10px] font-normal text-[#01A8AB]">
-                      Current
-                    </span>
-                  )}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Select value={hub} onValueChange={setHub}>
-          <SelectTrigger className="!h-auto w-full p-4 text-sm [&_.select-badge]:hidden">
-            <SelectValue placeholder="Hub" className="text-sm" />
-          </SelectTrigger>
+        <div>
+          <label className="block text-sm font-medium mb-1">Select Genres</label>
+          <Select
+            isMulti
+            options={genres}
+            value={selectedGenres}
+            onChange={(options) => setSelectedGenres(options as GenreOption[])}
+            className="text-black"
+          />
+        </div>
 
-          <SelectContent className="[&_[data-radix-select-item-indicator]]:hidden [&_[data-state=checked]]:bg-transparent [&_[data-state=checked]_svg]:hidden">
-            <SelectGroup>
-              {[
-                { label: "Helix-Prime", value: "helix-prime" },
-                { label: "Helix-Hub", value: "helix-hub" },
-              ].map((item) => (
-                <SelectItem
-                  key={item.value}
-                  value={item.value}
-                  className="flex items-center justify-between px-4 py-2 hover:bg-gray-50"
-                >
-                  <span>{item.label}</span>
-                  {hub === item.value && (
-                    <span className="select-badge ml-auto inline-block rounded bg-[#CEEEEE] px-1 text-[10px] font-normal text-[#01A8AB]">
-                      Current
-                    </span>
-                  )}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        <div>
+          <label className="block text-sm font-medium mb-1">Access Level</label>
+          <div className="flex gap-2">
+            {["FREE", "PREMIUM"].map((level) => (
+              <Button
+                key={level}
+                type="button"
+                variant={formData.accessLevel === level ? "default" : "outline"}
+                onClick={() => setFormData({ ...formData, accessLevel: level })}
+              >
+                {level}
+              </Button>
+            ))}
+          </div>
+        </div>
       </div>
 
-      <DialogFooter className="mt-4 grid grid-cols-2 gap-2 md:flex">
-        <Button
-          className="bg-[#E6E6E6] text-[#193049] hover:bg-[#d9d9d9]"
-          onClick={() => close?.()}
-        >
+      <DialogFooter className="mt-4">
+        <Button variant="outline" onClick={close}>
           Cancel
         </Button>
-        <Button className="bg-highlight text-white md:w-[100px]">
-          Add Movie
+        <Button onClick={handleSubmit} disabled={loading}>
+          {loading ? "Adding..." : "Add Movie"}
         </Button>
       </DialogFooter>
     </DialogContent>
   );
-};
-
-export default AddMovieDialog;
+}
