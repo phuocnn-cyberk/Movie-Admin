@@ -37,13 +37,30 @@ export default function AddMovieDialog({ close }: Props) {
   const [selectedGenres, setSelectedGenres] = useState<GenreOption[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Load genres from BE
+  // upload ảnh poster (tích hợp từ main)
+  const [image, setImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImage(file);
+      const reader = new FileReader();
+      reader.onload = () => setImagePreview(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+  const removeImage = () => {
+    setImage(null);
+    setImagePreview(null);
+  };
+
+  // Load genres từ BE
   useEffect(() => {
     const fetchGenres = async () => {
       try {
         const res = await getAllGenres();
         const arr = Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : [];
-
         setGenres(
           arr.map((g: any) => ({
             value: g.genreID ?? g.GenreID ?? g.id ?? 0,
@@ -74,31 +91,13 @@ export default function AddMovieDialog({ close }: Props) {
       return;
     }
 
-    const durationNum = parseInt(formData.duration, 10);
-    const yearNum = parseInt(formData.year, 10);
-
-    if (Number.isNaN(durationNum) || durationNum <= 0) {
-      alert("Duration must be a positive number");
-      return;
-    }
-    if (Number.isNaN(yearNum)) {
-      alert("Year must be a number");
-      return;
-    }
-
     try {
       setLoading(true);
 
-      // ✅ GỬI ĐÚNG KEY CHO BE: genreIds
       const payload = {
-        title: formData.title,
-        description: formData.description,
-        duration: durationNum,
-        year: yearNum,
-        poster: formData.poster,
-        trailerURL: formData.trailerURL,
-        videoURL: formData.videoURL,
-        accessLevel: formData.accessLevel, // "FREE" | "PREMIUM"
+        ...formData,
+        duration: parseInt(formData.duration, 10),
+        year: parseInt(formData.year, 10),
         genreIds: selectedGenres.map((g) => g.value),
       };
 
@@ -123,51 +122,32 @@ export default function AddMovieDialog({ close }: Props) {
       </DialogHeader>
 
       <div className="space-y-3">
-        <Input
-          name="title"
-          placeholder="Title"
-          value={formData.title}
-          onChange={handleChange}
-        />
-        <Input
-          name="description"
-          placeholder="Description"
-          value={formData.description}
-          onChange={handleChange}
-        />
-        <Input
-          type="number"
-          name="duration"
-          placeholder="Duration (minutes)"
-          value={formData.duration}
-          onChange={handleChange}
-        />
-        <Input
-          type="number"
-          name="year"
-          placeholder="Year"
-          value={formData.year}
-          onChange={handleChange}
-        />
-        <Input
-          name="poster"
-          placeholder="Poster URL"
-          value={formData.poster}
-          onChange={handleChange}
-        />
-        <Input
-          name="trailerURL"
-          placeholder="Trailer URL"
-          value={formData.trailerURL}
-          onChange={handleChange}
-        />
-        <Input
-          name="videoURL"
-          placeholder="Video URL"
-          value={formData.videoURL}
-          onChange={handleChange}
-        />
+        <Input name="title" placeholder="Title" value={formData.title} onChange={handleChange} />
+        <Input name="description" placeholder="Description" value={formData.description} onChange={handleChange} />
+        <Input type="number" name="duration" placeholder="Duration (minutes)" value={formData.duration} onChange={handleChange} />
+        <Input type="number" name="year" placeholder="Year" value={formData.year} onChange={handleChange} />
 
+        {/* Upload poster */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Movie Poster</label>
+          {imagePreview ? (
+            <div className="relative">
+              <img src={imagePreview} alt="Movie poster preview" className="w-full h-32 object-cover rounded-lg border-2 border-gray-200" />
+              <button onClick={removeImage} className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600">
+                ×
+              </button>
+            </div>
+          ) : (
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-gray-400 h-32 flex items-center justify-center">
+              <input type="file" accept="image/*" onChange={handleImageUpload} />
+            </div>
+          )}
+        </div>
+
+        <Input name="trailerURL" placeholder="Trailer URL" value={formData.trailerURL} onChange={handleChange} />
+        <Input name="videoURL" placeholder="Video URL" value={formData.videoURL} onChange={handleChange} />
+
+        {/* Genres */}
         <div>
           <label className="block text-sm font-medium mb-1">Select Genres</label>
           <Select
@@ -179,6 +159,7 @@ export default function AddMovieDialog({ close }: Props) {
           />
         </div>
 
+        {/* Access level */}
         <div>
           <label className="block text-sm font-medium mb-1">Access Level</label>
           <div className="flex gap-2">
@@ -197,9 +178,7 @@ export default function AddMovieDialog({ close }: Props) {
       </div>
 
       <DialogFooter className="mt-4">
-        <Button variant="outline" onClick={close} disabled={loading}>
-          Cancel
-        </Button>
+        <Button variant="outline" onClick={close} disabled={loading}>Cancel</Button>
         <Button onClick={handleSubmit} disabled={loading}>
           {loading ? "Adding..." : "Add Movie"}
         </Button>
