@@ -41,4 +41,85 @@ export const replySupport = async (payload: SupportReplyPayload) => {
   const response = await api.post("/api/supports/reply", payload);
   return response.data;
 };
+
+// Movies
+export const getAllMovies = async () => {
+  const res = await api.get("/api/movies");
+  return res.data;
+};
+
+export const createMovie = async (movieData: any) => {
+  const res = await api.post("/api/movies", movieData);
+  return res.data;
+};
+
+export const updateMovie = async (id: number, movieData: any) => {
+  const res = await api.put(`/api/movies/${id}`, movieData);
+  return res.data;
+};
+
+export const deleteMovie = async (id: number) => {
+  const res = await api.delete(`/api/movies/${id}`);
+  return res.data;
+};
+
+
+// Genres
+export const getAllGenres = async () => {
+  const res = await api.get("/api/genres");
+
+  // Log để kiểm tra dữ liệu trả về
+  console.log("📌 /api/genres raw:", res.data);
+
+  // Nếu API trả mảng trực tiếp
+  if (Array.isArray(res.data)) {
+    return res.data;
+  }
+
+  // Nếu API trả trong object { data: [...] }
+  if (Array.isArray(res.data?.data)) {
+    return res.data.data;
+  }
+
+  // Trường hợp khác, trả về mảng rỗng
+  return [];
+};
+
+
+export const addGenre = async (name: string) => {
+  const res = await api.post("/api/genres", { name });
+  return res.data;
+};
+
+export const updateGenre = async (id: number, name: string) => {
+  const res = await api.put(`/api/genres/${id}`, { name });
+  return res.data;
+};
+
+export const deleteGenre = async (id: number) => {
+  const res = await api.delete(`/api/genres/${id}`);
+  return res.data;
+};
+
+// MovieGenres
+export const assignGenresToMovie = async (movieId: number, genreIds: number[]) => {
+  const res = await api.post("/api/movie-genres/assign", { movieId, genreIds });
+  return res.data;
+};
+
+export const getGenresByMovie = async (movieId: number) => {
+  const res = await api.get(`/api/movie-genres/${movieId}/genres`);
+  return res.data;
+};
+
+//Payments
+export const getAllPayments = async () => {
+  const res = await api.get("/api/payments/all");
+  return res.data;
+};
+
+export const getPaymentsByUser = async (userId: number) => {
+  const res = await api.get(`/api/payments/user/${userId}`);
+  return res.data;
+};
 export { api };

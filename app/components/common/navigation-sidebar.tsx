@@ -23,6 +23,8 @@ const navigationItems: NavigationItemType[] = [
   { name: "Dashboard", path: ROUTES.DASHBOARD },
   { name: "Support Management", path: ROUTES.SUPPORT_MANAGEMENT },
   { name: "Movie Management", path: ROUTES.MOVIE_MANAGEMENT },
+  { name: "Genre Management", path: ROUTES.GENRE_MANAGEMENT },
+  { name: "Payment Management", path: ROUTES.PAYMENT_MANAGEMENT,}
 ];
 
 interface NavigationItemProps {

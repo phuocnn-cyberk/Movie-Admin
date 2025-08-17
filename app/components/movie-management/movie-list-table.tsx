@@ -1,114 +1,73 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Edit, Trash2 } from "lucide-react";
-import { useState } from "react";
-import { DeleteMovieDialog } from "./delete-movie-dialog";
+"use client";
 
-const MovieListTable = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <div className="mt-4 overflow-hidden rounded-lg border border-[#E9E9E9] bg-white">
-      {children}
-    </div>
-  );
+import { Pencil, Trash2 } from "lucide-react";
+
+type Movie = {
+  movieID: number;
+  title: string;
+  description: string;
+  year: string;
+  poster: string;
+  genres: string[];
+  accessLevel: "FREE" | "PREMIUM";
 };
 
-interface TableProps {
-  data: {
-    id: number;
-    image: string;
-    title: string;
-    year: string;
-    genre: string;
-  }[];
-}
+type Props = {
+  data: Movie[];
+  onEdit?: (movie: Movie) => void;
+  onDelete?: (movieID: number) => void;
+};
 
-const DataTable: React.FC<TableProps> = ({ data }) => {
-  const [isEditQuestOpen, setIsEditQuestOpen] = useState(false);
-  const [isDeleteQuestOpen, setIsDeleteQuestOpen] = useState(false);
-
-  const handleDeleteMovie = () => {
-    console.log("delete movie");
-  };
+export default function MovieListTable({ data, onEdit, onDelete }: Props) {
+  if (data.length === 0) return <p>No movies available.</p>;
 
   return (
-    <div className="overflow-hidden rounded-lg bg-white">
-      <Table className="border-collapse divide-y divide-[#E9E9E9] rounded-lg">
-        <TableHeader>
-          <TableRow className="text-left text-sm font-medium text-[#8A8A8A]">
-            <TableHead className="px-4 py-3 first:rounded-tl-lg">
-              Image
-            </TableHead>
-            <TableHead className="px-4 py-3">Title</TableHead>
-            <TableHead className="px-4 py-3">Year</TableHead>
-            <TableHead className="px-4 py-3">Genre</TableHead>
-            <TableHead className="px-4 py-3">Action</TableHead>
-            <TableHead className="w-12 rounded-tr-lg px-4 py-3" />
-          </TableRow>
-        </TableHeader>
-
-        <TableBody>
-          {data.map((user) => (
-            <TableRow key={user.id} className="border-b last:border-b-0">
-              <TableCell className="px-4 py-3 text-sm font-semibold">
-                <img
-                  src={user.image}
-                  alt={user.title}
-                  className="h-10 w-10 rounded-lg"
-                />
-              </TableCell>
-              <TableCell className="px-4 py-3 text-sm font-semibold">
-                {user.title}
-              </TableCell>
-              <TableCell className="px-4 py-3 text-sm font-semibold">
-                {user.year}
-              </TableCell>
-              <TableCell className="px-4 py-3 text-sm font-semibold">
-                {user.genre}
-              </TableCell>
-              <TableCell className="px-4 py-3 text-sm font-semibold">
-                <div className="flex items-center gap-3">
+    <div className="overflow-x-auto">
+      <table className="min-w-full border border-gray-200 rounded-lg overflow-hidden">
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="p-2 text-left text-sm font-medium border-b">Image</th>
+            <th className="p-2 text-left text-sm font-medium border-b">Title</th>
+            <th className="p-2 text-left text-sm font-medium border-b">Year</th>
+            <th className="p-2 text-left text-sm font-medium border-b">Genre</th>
+            <th className="p-2 text-center text-sm font-medium border-b">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((m) => (
+            <tr key={m.movieID} className="hover:bg-gray-50">
+              <td className="p-2 border-b">
+                {m.poster && (
+                  <img
+                    src={m.poster}
+                    alt={m.title}
+                    className="w-16 h-16 object-cover rounded"
+                  />
+                )}
+              </td>
+              <td className="p-2 border-b font-semibold">{m.title}</td>
+              <td className="p-2 border-b">{m.year}</td>
+              <td className="p-2 border-b">{m.genres.join(", ")}</td>
+              <td className="p-2 border-b">
+                <div className="flex items-center justify-center gap-3">
                   <button
-                    onClick={() => setIsEditQuestOpen(true)}
-                    className="flex cursor-pointer items-center text-[#01A8AB]"
+                    className="text-blue-600 hover:text-blue-800"
+                    onClick={() => onEdit?.(m)}
                   >
-                    <Edit className="h-6 w-6 md:h-7 md:w-7" />
+                    <Pencil size={18} />
                   </button>
-                  <div className="h-7 w-px bg-[#E7E7E7]" />
                   <button
-                    onClick={() => setIsDeleteQuestOpen(true)}
-                    className="flex cursor-pointer items-center text-[#01A8AB]"
+                    className="text-red-600 hover:text-red-800"
+                    onClick={() => onDelete?.(m.movieID)}
                   >
-                    <Trash2 className="h-6 w-6 md:h-7 md:w-7" />
+                    <Trash2 size={18} />
                   </button>
                 </div>
-              </TableCell>
-            </TableRow>
+              </td>
+            </tr>
           ))}
-        </TableBody>
-      </Table>
-      <DeleteMovieDialog.Root
-        isOpen={isDeleteQuestOpen}
-        onClose={() => setIsDeleteQuestOpen(false)}
-        onDelete={handleDeleteMovie}
-      >
-        <DeleteMovieDialog.Header />
-        <DeleteMovieDialog.Description />
-        <DeleteMovieDialog.MoviePreview
-          image={data[0].image}
-          title={data[0].title}
-        />
-        <DeleteMovieDialog.Actions />
-      </DeleteMovieDialog.Root>
+        </tbody>
+      </table>
     </div>
   );
-};
-
-MovieListTable.DataTable = DataTable;
-
-export { MovieListTable };
+}
