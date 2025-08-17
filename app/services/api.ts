@@ -63,11 +63,28 @@ export const deleteMovie = async (id: number) => {
   return res.data;
 };
 
+
 // Genres
 export const getAllGenres = async () => {
   const res = await api.get("/api/genres");
-  return res.data;
+
+  // Log để kiểm tra dữ liệu trả về
+  console.log("📌 /api/genres raw:", res.data);
+
+  // Nếu API trả mảng trực tiếp
+  if (Array.isArray(res.data)) {
+    return res.data;
+  }
+
+  // Nếu API trả trong object { data: [...] }
+  if (Array.isArray(res.data?.data)) {
+    return res.data.data;
+  }
+
+  // Trường hợp khác, trả về mảng rỗng
+  return [];
 };
+
 
 export const addGenre = async (name: string) => {
   const res = await api.post("/api/genres", { name });
@@ -95,4 +112,14 @@ export const getGenresByMovie = async (movieId: number) => {
   return res.data;
 };
 
+//Payments
+export const getAllPayments = async () => {
+  const res = await api.get("/api/payments/all");
+  return res.data;
+};
+
+export const getPaymentsByUser = async (userId: number) => {
+  const res = await api.get(`/api/payments/user/${userId}`);
+  return res.data;
+};
 export { api };

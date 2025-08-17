@@ -1,11 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Select from "react-select";
-import { createMovie, getAllGenres } from "app/services/api"; // Thay tên API nếu khác
+import { createMovie, getAllGenres } from "app/services/api";
 
 type GenreOption = {
   value: number;
@@ -37,11 +42,12 @@ export default function AddMovieDialog({ close }: Props) {
     const fetchGenres = async () => {
       try {
         const res = await getAllGenres();
-        const arr = Array.isArray(res?.data) ? res.data : res;
+        const arr = Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : [];
+
         setGenres(
           arr.map((g: any) => ({
-            value: g.genreID,
-            label: g.name,
+            value: g.genreID ?? g.GenreID ?? g.id ?? 0,
+            label: g.name ?? g.Name ?? g.title ?? "",
           }))
         );
       } catch (err) {
@@ -52,10 +58,10 @@ export default function AddMovieDialog({ close }: Props) {
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   const handleSubmit = async () => {
@@ -68,14 +74,32 @@ export default function AddMovieDialog({ close }: Props) {
       return;
     }
 
+    const durationNum = parseInt(formData.duration, 10);
+    const yearNum = parseInt(formData.year, 10);
+
+    if (Number.isNaN(durationNum) || durationNum <= 0) {
+      alert("Duration must be a positive number");
+      return;
+    }
+    if (Number.isNaN(yearNum)) {
+      alert("Year must be a number");
+      return;
+    }
+
     try {
       setLoading(true);
 
+      // ✅ GỬI ĐÚNG KEY CHO BE: genreIds
       const payload = {
-        ...formData,
-        duration: parseInt(formData.duration),
-        year: parseInt(formData.year),
-        genres: selectedGenres.map((g) => g.value), // gửi mảng ID
+        title: formData.title,
+        description: formData.description,
+        duration: durationNum,
+        year: yearNum,
+        poster: formData.poster,
+        trailerURL: formData.trailerURL,
+        videoURL: formData.videoURL,
+        accessLevel: formData.accessLevel, // "FREE" | "PREMIUM"
+        genreIds: selectedGenres.map((g) => g.value),
       };
 
       await createMovie(payload);
@@ -99,13 +123,50 @@ export default function AddMovieDialog({ close }: Props) {
       </DialogHeader>
 
       <div className="space-y-3">
-        <Input name="title" placeholder="Title" value={formData.title} onChange={handleChange} />
-        <Input name="description" placeholder="Description" value={formData.description} onChange={handleChange} />
-        <Input name="duration" placeholder="Duration (minutes)" value={formData.duration} onChange={handleChange} />
-        <Input name="year" placeholder="Year" value={formData.year} onChange={handleChange} />
-        <Input name="poster" placeholder="Poster URL" value={formData.poster} onChange={handleChange} />
-        <Input name="trailerURL" placeholder="Trailer URL" value={formData.trailerURL} onChange={handleChange} />
-        <Input name="videoURL" placeholder="Video URL" value={formData.videoURL} onChange={handleChange} />
+        <Input
+          name="title"
+          placeholder="Title"
+          value={formData.title}
+          onChange={handleChange}
+        />
+        <Input
+          name="description"
+          placeholder="Description"
+          value={formData.description}
+          onChange={handleChange}
+        />
+        <Input
+          type="number"
+          name="duration"
+          placeholder="Duration (minutes)"
+          value={formData.duration}
+          onChange={handleChange}
+        />
+        <Input
+          type="number"
+          name="year"
+          placeholder="Year"
+          value={formData.year}
+          onChange={handleChange}
+        />
+        <Input
+          name="poster"
+          placeholder="Poster URL"
+          value={formData.poster}
+          onChange={handleChange}
+        />
+        <Input
+          name="trailerURL"
+          placeholder="Trailer URL"
+          value={formData.trailerURL}
+          onChange={handleChange}
+        />
+        <Input
+          name="videoURL"
+          placeholder="Video URL"
+          value={formData.videoURL}
+          onChange={handleChange}
+        />
 
         <div>
           <label className="block text-sm font-medium mb-1">Select Genres</label>
@@ -126,7 +187,7 @@ export default function AddMovieDialog({ close }: Props) {
                 key={level}
                 type="button"
                 variant={formData.accessLevel === level ? "default" : "outline"}
-                onClick={() => setFormData({ ...formData, accessLevel: level })}
+                onClick={() => setFormData((p) => ({ ...p, accessLevel: level }))}
               >
                 {level}
               </Button>
@@ -136,7 +197,7 @@ export default function AddMovieDialog({ close }: Props) {
       </div>
 
       <DialogFooter className="mt-4">
-        <Button variant="outline" onClick={close}>
+        <Button variant="outline" onClick={close} disabled={loading}>
           Cancel
         </Button>
         <Button onClick={handleSubmit} disabled={loading}>
