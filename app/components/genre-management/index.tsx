@@ -79,7 +79,7 @@ export default function GenreManagement() {
 
         <Dialog open={openAddGenreDialog} onOpenChange={setOpenAddGenreDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-green-600 text-white">
+            <Button className="bg-[#E50000] text-white">
               <Plus className="h-4 w-4" /> Add Genre
             </Button>
           </DialogTrigger>
@@ -92,7 +92,11 @@ export default function GenreManagement() {
         </Dialog>
       </div>
 
-      <GenreListTable data={genres} onEdit={handleEdit} onDelete={handleDelete} />
+      <GenreListTable
+        data={genres}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
     </div>
   );
 }

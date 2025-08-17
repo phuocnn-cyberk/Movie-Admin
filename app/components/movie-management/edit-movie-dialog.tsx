@@ -1,7 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { Movie } from "./index";
@@ -12,7 +16,11 @@ type EditMovieDialogProps = {
   onSubmit: (data: any) => void;
 };
 
-export default function EditMovieDialog({ movie, close, onSubmit }: EditMovieDialogProps) {
+export default function EditMovieDialog({
+  movie,
+  close,
+  onSubmit,
+}: EditMovieDialogProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [year, setYear] = useState("");
@@ -44,17 +52,37 @@ export default function EditMovieDialog({ movie, close, onSubmit }: EditMovieDia
   };
 
   return (
-    <DialogContent className="max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 rounded-lg shadow-lg">
+    <DialogContent className="max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-lg">
       <DialogHeader>
         <DialogTitle>Edit Movie</DialogTitle>
       </DialogHeader>
 
       <div className="space-y-3">
-        <Input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-        <Input placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
-        <Input placeholder="Year" value={year} onChange={(e) => setYear(e.target.value)} />
-        <Input placeholder="Poster URL" value={poster} onChange={(e) => setPoster(e.target.value)} />
-        <Input placeholder="Genres (comma separated)" value={genres} onChange={(e) => setGenres(e.target.value)} />
+        <Input
+          placeholder="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <Input
+          placeholder="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+        <Input
+          placeholder="Year"
+          value={year}
+          onChange={(e) => setYear(e.target.value)}
+        />
+        <Input
+          placeholder="Poster URL"
+          value={poster}
+          onChange={(e) => setPoster(e.target.value)}
+        />
+        <Input
+          placeholder="Genres (comma separated)"
+          value={genres}
+          onChange={(e) => setGenres(e.target.value)}
+        />
 
         <select
           value={accessLevel}

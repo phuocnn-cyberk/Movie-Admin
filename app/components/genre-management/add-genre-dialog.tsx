@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { addGenre } from "app/services/api";
@@ -34,7 +39,7 @@ export default function AddGenreDialog({ close }: Props) {
   };
 
   return (
-    <DialogContent className="bg-white dark:bg-gray-900 rounded-lg shadow-lg">
+    <DialogContent className="bg-white rounded-lg shadow-lg">
       <DialogHeader>
         <DialogTitle>Add New Genre</DialogTitle>
       </DialogHeader>
