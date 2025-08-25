@@ -122,4 +122,28 @@ export const getPaymentsByUser = async (userId: number) => {
   const res = await api.get(`/api/payments/user/${userId}`);
   return res.data;
 };
+
+//Series
+export const getAllSeries = async () => {
+  const res = await api.get("/api/series");
+  return res.data;
+};
+
+// Thêm mới series
+export const createSeries = async (seriesData: any) => {
+  const res = await api.post("/api/series", seriesData);
+  return res.data;
+};
+
+// Cập nhật series
+export const updateSeries = async (id: number, seriesData: any) => {
+  const res = await api.put(`/api/series/${id}`, seriesData);
+  return res.data;
+};
+
+// Xóa series
+export const deleteSeries = async (id: number) => {
+  const res = await api.delete(`/api/series/${id}`);
+  return res.data;
+};
 export { api };

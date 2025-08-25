@@ -18,6 +18,8 @@ export const Header = () => {
         return "Movie Management";
       case ROUTES.GENRE_MANAGEMENT:
         return "Genre Management";
+      case ROUTES.SERIES_MANAGEMENT:
+        return "Series Management";
       case ROUTES.PAYMENT_MANAGEMENT:
         return "Payment Management";
       default:

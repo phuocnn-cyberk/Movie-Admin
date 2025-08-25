@@ -24,6 +24,7 @@ const navigationItems: NavigationItemType[] = [
   { name: "Support Management", path: ROUTES.SUPPORT_MANAGEMENT },
   { name: "Movie Management", path: ROUTES.MOVIE_MANAGEMENT },
   { name: "Genre Management", path: ROUTES.GENRE_MANAGEMENT },
+  { name: "Series Management", path: ROUTES.SERIES_MANAGEMENT },
   { name: "Payment Management", path: ROUTES.PAYMENT_MANAGEMENT,}
 ];
 

@@ -24,3 +24,5 @@ export interface SupportReplyPayload {
   response: string;
   respondedBy: number;
 }
+
+

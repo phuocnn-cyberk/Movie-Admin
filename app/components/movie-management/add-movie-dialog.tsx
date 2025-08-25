@@ -30,8 +30,10 @@ export default function AddMovieDialog({ close }: Props) {
     poster: "",
     trailerURL: "",
     videoURL: "",
+    playbackId: "",   // thêm dòng này
     accessLevel: "FREE",
   });
+
 
   const [genres, setGenres] = useState<GenreOption[]>([]);
   const [selectedGenres, setSelectedGenres] = useState<GenreOption[]>([]);
@@ -146,6 +148,12 @@ export default function AddMovieDialog({ close }: Props) {
 
         <Input name="trailerURL" placeholder="Trailer URL" value={formData.trailerURL} onChange={handleChange} />
         <Input name="videoURL" placeholder="Video URL" value={formData.videoURL} onChange={handleChange} />
+        <Input
+            name="playbackId"
+            placeholder="Playback ID"
+            value={formData.playbackId}
+            onChange={handleChange}
+          />
 
         {/* Genres */}
         <div>

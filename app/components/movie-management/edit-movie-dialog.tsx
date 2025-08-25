@@ -19,15 +19,17 @@ export default function EditMovieDialog({ movie, close, onSubmit }: EditMovieDia
   const [poster, setPoster] = useState("");
   const [genres, setGenres] = useState("");
   const [accessLevel, setAccessLevel] = useState<"FREE" | "PREMIUM">("FREE");
+  const [playbackId, setPlaybackId] = useState(""); // thêm playbackId
 
   useEffect(() => {
     if (movie) {
       setTitle(movie.title);
       setDescription(movie.description);
-      setYear(movie.year);
+      setYear(String(movie.year));
       setPoster(movie.poster);
       setGenres(movie.genres.join(", "));
       setAccessLevel(movie.accessLevel);
+      setPlaybackId(movie.playbackId || ""); // load playbackId từ movie
     }
   }, [movie]);
 
@@ -35,10 +37,11 @@ export default function EditMovieDialog({ movie, close, onSubmit }: EditMovieDia
     const updatedMovie = {
       title,
       description,
-      year,
+      year: parseInt(year, 10), // parse về số
       poster,
       genres: genres.split(",").map((g) => g.trim()),
       accessLevel,
+      playbackId, // thêm playbackId vào payload
     };
     onSubmit(updatedMovie);
   };
@@ -55,6 +58,7 @@ export default function EditMovieDialog({ movie, close, onSubmit }: EditMovieDia
         <Input placeholder="Year" value={year} onChange={(e) => setYear(e.target.value)} />
         <Input placeholder="Poster URL" value={poster} onChange={(e) => setPoster(e.target.value)} />
         <Input placeholder="Genres (comma separated)" value={genres} onChange={(e) => setGenres(e.target.value)} />
+        <Input placeholder="Playback ID" value={playbackId} onChange={(e) => setPlaybackId(e.target.value)} /> {/* thêm field */}
 
         <select
           value={accessLevel}
