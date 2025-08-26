@@ -27,6 +27,7 @@ export default function EditMovieDialog({
   const [poster, setPoster] = useState("");
   const [genres, setGenres] = useState("");
   const [accessLevel, setAccessLevel] = useState<"FREE" | "PREMIUM">("FREE");
+  const [playbackId, setPlaybackId] = useState(""); // ✅ PlaybackID
 
   useEffect(() => {
     if (movie) {
@@ -36,6 +37,7 @@ export default function EditMovieDialog({
       setPoster(movie.poster);
       setGenres(movie.genres.join(", "));
       setAccessLevel(movie.accessLevel);
+      setPlaybackId(movie.playbackId ?? ""); // ✅ chỉ dùng field chuẩn hoá
     }
   }, [movie]);
 
@@ -47,6 +49,7 @@ export default function EditMovieDialog({
       poster,
       genres: genres.split(",").map((g) => g.trim()),
       accessLevel,
+      playbackId, // ✅ gửi PlaybackID
     };
     onSubmit(updatedMovie);
   };
@@ -82,6 +85,11 @@ export default function EditMovieDialog({
           placeholder="Genres (comma separated)"
           value={genres}
           onChange={(e) => setGenres(e.target.value)}
+        />
+        <Input
+          placeholder="Playback ID"
+          value={playbackId}
+          onChange={(e) => setPlaybackId(e.target.value)}
         />
 
         <select

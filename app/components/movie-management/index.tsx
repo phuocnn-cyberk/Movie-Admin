@@ -18,6 +18,7 @@ export type Movie = {
   poster: string;
   genres: string[];
   accessLevel: "FREE" | "PREMIUM";
+  playbackId?: string; // ✅ thêm PlaybackID
 };
 
 export default function MovieManagement() {
@@ -69,6 +70,7 @@ export default function MovieManagement() {
           poster: m.poster ?? m.Poster ?? "",
           genres: genreNames,
           accessLevel: m.accessLevel ?? m.AccessLevel ?? "FREE",
+          playbackId: m.playbackId ?? m.PlaybackId ?? "", // ✅ thêm PlaybackID
         };
       });
 
