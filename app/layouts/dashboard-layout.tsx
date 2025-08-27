@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Outlet, useLocation } from "react-router";
+import { ProfileDropdown } from "@/profile-dropdown";
 import { MobileHeader } from "~/components/common/mobile-header";
 import { NavigationSidebar } from "~/components/common/navigation-sidebar";
-import { SignInButton } from "~/components/sign-in-button";
 import { requiredAuth } from "~/middlewares/authentication";
 import { ROUTES } from "~/routes";
 
@@ -30,7 +30,7 @@ export const Header = () => {
         {getTitle()}
       </h1>
       <div className="hidden items-center gap-2 md:flex">
-        <SignInButton />
+        <ProfileDropdown />
       </div>
     </div>
   );

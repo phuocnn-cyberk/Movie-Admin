@@ -2,15 +2,8 @@ import { cn } from "~/lib/utils";
 import { NavLink } from "react-router";
 import { ROUTES } from "~/routes";
 import StreamVibeLogo from "~/assets/logos/stream-vibe-logo.svg";
-
-export const PriceArea = () => {
-  return (
-    <div className="flex justify-between rounded-full bg-white/20 px-4 py-2 text-sm">
-      <span className="text-regular text-white">Price:</span>
-      <span>$100</span>
-    </div>
-  );
-};
+import { NavUser } from "~/layouts/nav-user";
+import { useAuthStore } from "~/stores/auth.store";
 
 interface NavigationItemType {
   name: string;
@@ -84,6 +77,8 @@ export const NavigationSidebar = ({
   isOpen: boolean;
   onClose: () => void;
 }) => {
+  const user = useAuthStore((state) => state.user);
+
   return (
     <>
       {isOpen && (
@@ -120,7 +115,7 @@ export const NavigationSidebar = ({
             ))}
           </div>
         </div>
-        <PriceArea />
+        {user && <NavUser />}
       </nav>
     </>
   );

@@ -1,4 +1,5 @@
 export interface User {
+  avatar?: string | null;
   userID?: string | number;
   username?: string | null;
   role?: string | null;
