@@ -30,6 +30,7 @@ export default function AddMovieDialog({ close }: Props) {
     poster: "",
     trailerURL: "",
     videoURL: "",
+    playbackId: "", // ✅ Thêm PlaybackID
     accessLevel: "FREE",
   });
 
@@ -37,7 +38,7 @@ export default function AddMovieDialog({ close }: Props) {
   const [selectedGenres, setSelectedGenres] = useState<GenreOption[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // upload ảnh poster (tích hợp từ main)
+  // upload ảnh poster
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
@@ -191,6 +192,12 @@ export default function AddMovieDialog({ close }: Props) {
           name="videoURL"
           placeholder="Video URL"
           value={formData.videoURL}
+          onChange={handleChange}
+        />
+        <Input
+          name="playbackId"
+          placeholder="Playback ID"
+          value={formData.playbackId}
           onChange={handleChange}
         />
 
