@@ -18,25 +18,8 @@ export default function GenreManagement() {
     try {
       setLoading(true);
       const res = await getAllGenres();
-      console.log("📌 Genres API response:", res);
-
-      let arr: any[] = [];
-      if (Array.isArray(res)) {
-        arr = res;
-      } else if (Array.isArray(res?.data)) {
-        arr = res.data;
-      } else {
-        console.warn("⚠️ API /api/genres không trả mảng hợp lệ.");
-      }
-
-      const normalized: Genre[] = arr.map((g: any) => ({
-        genreID: g.genreID ?? g.GenreID ?? 0,
-        name: g.name ?? g.Name ?? "",
-      }));
-
-      setGenres(normalized);
+      setGenres(res);
     } catch (err) {
-      console.error("❌ Failed to fetch genres:", err);
       setGenres([]);
     } finally {
       setLoading(false);
@@ -53,7 +36,6 @@ export default function GenreManagement() {
       await deleteGenre(id);
       loadGenres();
     } catch (err) {
-      console.error("Failed to delete genre:", err);
       alert("Delete failed.");
     }
   };
@@ -65,7 +47,6 @@ export default function GenreManagement() {
       await updateGenre(genre.genreID, newName.trim());
       loadGenres();
     } catch (err) {
-      console.error("Failed to update genre:", err);
       alert("Update failed.");
     }
   };

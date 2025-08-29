@@ -8,8 +8,13 @@ import {
 import { Overview } from "./components/overview";
 import { RecentSales } from "./components/recent-sales";
 import { ChartBar, CreditCard, DollarSign, Users } from "lucide-react";
+import { useGetDashboardStats } from "~/hooks/dashboard/useGetDashboardStats";
 
 export function Dashboard() {
+  const { data: stats, isLoading } = useGetDashboardStats();
+
+  if (isLoading) return <div>Loading...</div>;
+
   return (
     <div className="space-y-4">
       {/* stats */}
@@ -20,10 +25,10 @@ export function Dashboard() {
             <DollarSign />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$45,231.89</div>
-            <p className="text-muted-foreground text-xs">
+            <div className="text-2xl font-bold">{stats?.totalRevenue} $</div>
+            {/* <p className="text-muted-foreground text-xs">
               +20.1% from last month
-            </p>
+            </p> */}
           </CardContent>
         </Card>
         <Card>
@@ -32,22 +37,28 @@ export function Dashboard() {
             <CreditCard />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+2350</div>
-            <p className="text-muted-foreground text-xs">
+            <div className="text-2xl font-bold">
+              {stats?.totalSubscriptions}
+            </div>
+            {/* <p className="text-muted-foreground text-xs">
               +180.1% from last month
-            </p>
+            </p> */}
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Sales</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Active Subscriptions
+            </CardTitle>
             <ChartBar />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+12,234</div>
-            <p className="text-muted-foreground text-xs">
+            <div className="text-2xl font-bold">
+              {stats?.activeSubscriptions}
+            </div>
+            {/* <p className="text-muted-foreground text-xs">
               +19% from last month
-            </p>
+            </p> */}
           </CardContent>
         </Card>
         <Card>
@@ -56,10 +67,10 @@ export function Dashboard() {
             <Users />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+573</div>
-            <p className="text-muted-foreground text-xs">
+            <div className="text-2xl font-bold">{stats?.totalUsers}</div>
+            {/* <p className="text-muted-foreground text-xs">
               +201 since last hour
-            </p>
+            </p> */}
           </CardContent>
         </Card>
       </div>

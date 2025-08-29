@@ -23,7 +23,7 @@ const PaymentListTable: React.FC<Props> = ({ payments }) => {
         <thead className="bg-gray-100 text-gray-700">
           <tr>
             <th className="px-4 py-2">ID</th>
-            <th className="px-4 py-2">User</th>
+            <th className="px-4 py-2">User ID</th>
             <th className="px-4 py-2">Amount</th>
             <th className="px-4 py-2">Method</th>
             <th className="px-4 py-2">Status</th>
@@ -44,11 +44,13 @@ const PaymentListTable: React.FC<Props> = ({ payments }) => {
               <tr key={p.paymentId} className="border-b hover:bg-gray-50">
                 <td className="px-4 py-2">{p.paymentId}</td>
                 <td className="px-4 py-2">{p.userId}</td>
-                <td className="px-4 py-2">{p.amount.toLocaleString()} VND</td>
+                <td className="px-4 py-2">{p.amount.toLocaleString()} $</td>
                 <td className="px-4 py-2">{p.paymentMethod}</td>
                 <td className="px-4 py-2">{p.paymentStatus}</td>
                 <td className="px-4 py-2">{p.paymentType}</td>
-                <td className="px-4 py-2">{new Date(p.paidAt).toLocaleString()}</td>
+                <td className="px-4 py-2">
+                  {new Date(p.paidAt).toLocaleString()}
+                </td>
                 <td className="px-4 py-2">{p.transactionRef}</td>
               </tr>
             ))
