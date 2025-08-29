@@ -27,10 +27,10 @@ export default function AddMovieDialog({ close }: Props) {
     description: "",
     duration: "",
     year: "",
-    poster: "",
+    poster: "",   // ✅ bây giờ là nhập link
     trailerURL: "",
     videoURL: "",
-    playbackId: "", // ✅ Thêm PlaybackID
+    playbackId: "",
     accessLevel: "FREE",
   });
 
@@ -38,34 +38,12 @@ export default function AddMovieDialog({ close }: Props) {
   const [selectedGenres, setSelectedGenres] = useState<GenreOption[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // upload ảnh poster
-  const [image, setImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImage(file);
-      const reader = new FileReader();
-      reader.onload = () => setImagePreview(reader.result as string);
-      reader.readAsDataURL(file);
-    }
-  };
-  const removeImage = () => {
-    setImage(null);
-    setImagePreview(null);
-  };
-
   // Load genres từ BE
   useEffect(() => {
     const fetchGenres = async () => {
       try {
         const res = await getAllGenres();
-        const arr = Array.isArray(res)
-          ? res
-          : Array.isArray(res?.data)
-          ? res.data
-          : [];
+        const arr = Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : [];
         setGenres(
           arr.map((g: any) => ({
             value: g.genreID ?? g.GenreID ?? g.id ?? 0,
@@ -118,7 +96,7 @@ export default function AddMovieDialog({ close }: Props) {
   };
 
   return (
-    <DialogContent className="max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-lg">
+    <DialogContent className="max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 rounded-lg shadow-lg">
       <DialogHeader>
         <DialogTitle>Add New Movie</DialogTitle>
         <p className="text-sm text-gray-500">
@@ -127,73 +105,28 @@ export default function AddMovieDialog({ close }: Props) {
       </DialogHeader>
 
       <div className="space-y-3">
-        <Input
-          name="title"
-          placeholder="Title"
-          value={formData.title}
-          onChange={handleChange}
-        />
-        <Input
-          name="description"
-          placeholder="Description"
-          value={formData.description}
-          onChange={handleChange}
-        />
-        <Input
-          type="number"
-          name="duration"
-          placeholder="Duration (minutes)"
-          value={formData.duration}
-          onChange={handleChange}
-        />
-        <Input
-          type="number"
-          name="year"
-          placeholder="Year"
-          value={formData.year}
-          onChange={handleChange}
-        />
+        <Input name="title" placeholder="Title" value={formData.title} onChange={handleChange} />
+        <Input name="description" placeholder="Description" value={formData.description} onChange={handleChange} />
+        <Input type="number" name="duration" placeholder="Duration (minutes)" value={formData.duration} onChange={handleChange} />
+        <Input type="number" name="year" placeholder="Year" value={formData.year} onChange={handleChange} />
 
-        {/* Upload poster */}
-        <div>
-          <label className="block text-sm font-medium mb-1">Movie Poster</label>
-          {imagePreview ? (
-            <div className="relative">
-              <img
-                src={imagePreview}
-                alt="Movie poster preview"
-                className="w-full h-32 object-cover rounded-lg border-2 border-gray-200"
-              />
-              <button
-                onClick={removeImage}
-                className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
-              >
-                ×
-              </button>
-            </div>
-          ) : (
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-gray-400 h-32 flex items-center justify-center">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-              />
-            </div>
-          )}
-        </div>
+        {/* ✅ Poster link input */}
+        <Input
+          name="poster"
+          placeholder="Poster Image URL"
+          value={formData.poster}
+          onChange={handleChange}
+        />
+        {formData.poster && (
+          <img
+            src={formData.poster}
+            alt="Poster preview"
+            className="w-full h-32 object-cover rounded-lg border-2 border-gray-200"
+          />
+        )}
 
-        <Input
-          name="trailerURL"
-          placeholder="Trailer URL"
-          value={formData.trailerURL}
-          onChange={handleChange}
-        />
-        <Input
-          name="videoURL"
-          placeholder="Video URL"
-          value={formData.videoURL}
-          onChange={handleChange}
-        />
+        <Input name="trailerURL" placeholder="Trailer URL" value={formData.trailerURL} onChange={handleChange} />
+        <Input name="videoURL" placeholder="Video URL" value={formData.videoURL} onChange={handleChange} />
         <Input
           name="playbackId"
           placeholder="Playback ID"
@@ -203,9 +136,7 @@ export default function AddMovieDialog({ close }: Props) {
 
         {/* Genres */}
         <div>
-          <label className="block text-sm font-medium mb-1">
-            Select Genres
-          </label>
+          <label className="block text-sm font-medium mb-1">Select Genres</label>
           <Select
             isMulti
             options={genres}
@@ -224,9 +155,7 @@ export default function AddMovieDialog({ close }: Props) {
                 key={level}
                 type="button"
                 variant={formData.accessLevel === level ? "default" : "outline"}
-                onClick={() =>
-                  setFormData((p) => ({ ...p, accessLevel: level }))
-                }
+                onClick={() => setFormData((p) => ({ ...p, accessLevel: level }))}
               >
                 {level}
               </Button>
@@ -236,9 +165,7 @@ export default function AddMovieDialog({ close }: Props) {
       </div>
 
       <DialogFooter className="mt-4">
-        <Button variant="outline" onClick={close} disabled={loading}>
-          Cancel
-        </Button>
+        <Button variant="outline" onClick={close} disabled={loading}>Cancel</Button>
         <Button onClick={handleSubmit} disabled={loading}>
           {loading ? "Adding..." : "Add Movie"}
         </Button>
